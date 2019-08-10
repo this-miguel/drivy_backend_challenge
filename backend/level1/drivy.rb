@@ -18,14 +18,13 @@ class Drivy
         rentals: rentals.map do |rental|
           {
               id: rental['id'],
-              price: calculate_price(rental)
+              price: calculate_price(rental, cars[rental['car_id']])
           }
         end
       }
     end
 
-    def calculate_price(rental)
-      car = cars[rental['car_id']]
+    def calculate_price(rental, car)
       rental_days = rental_days(rental['start_date'], rental['end_date'])
       time_price = time_price(rental_days, car['price_per_day'])
       distance_price = distance_price(rental['distance'],car['price_per_km'])
