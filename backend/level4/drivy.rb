@@ -58,7 +58,7 @@ class Drivy
     def calculate_price(rental, car, rental_days)
       price_per_day = car['price_per_day']
       time_price = time_price(rental_days, price_per_day)
-      distance_price = distance_price(rental['distance'], car['price_per_km'])
+      distance_price = rental['distance'] * car['price_per_km']
       time_price + distance_price
     end
 
@@ -79,10 +79,6 @@ class Drivy
           sum += price_per_day * 0.5
         end
       end.round
-    end
-
-    def distance_price(kilometers, price_per_kilometres)
-      kilometers * price_per_kilometres
     end
 
     def divide_commission(commission, rental_days)
