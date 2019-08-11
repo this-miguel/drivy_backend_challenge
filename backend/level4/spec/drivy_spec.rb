@@ -220,4 +220,58 @@ RSpec.describe Drivy do
       end
     end
   end
+
+  describe 'cars is nil' do
+    let (:input) do
+      {
+        "cars": [
+        ],
+        "rentals": [
+          { "id": 1, "car_id": 1, "start_date": "2015-12-8", "end_date": "2015-12-8", "distance": 100 },
+        ]
+      }
+    end
+
+    it 'throws an exception' do
+      expect{Drivy.process(input)}.to raise_exception(ArgumentError).with_message(
+          "\"input['cars']\" was not an Array. input['cars'] => #{input['cars'].inspect}."
+      )
+    end
+  end
+
+  describe 'cars is not an array' do
+    let (:input) do
+      {
+          "cars" => 'whatever',
+          "rentals" => [
+              { "id" =>  1, "car_id" => 1, "start_date" => "2015-12-8", "end_date" => "2015-12-8", "distance" => 100 },
+          ]
+      }
+    end
+
+    it 'throws an exception' do
+      expect{Drivy.process(input)}.to raise_exception(ArgumentError).with_message(
+          "\"input['cars']\" was not an Array. input['cars'] => #{input['cars'].inspect}."
+      )
+    end
+  end
+
+  describe 'some car_id is not present in cars array' do
+    let(:input) do
+      {
+        "cars"=>[
+          {"id"=>1, "price_per_day"=>2000, "price_per_km"=>10}
+        ],
+        "rentals" => [
+          {"id"=>1, "car_id"=>3, "start_date"=>"2015-12-8", "end_date"=>"2015-12-8", "distance"=>100},
+          {"id"=>2, "car_id"=>4, "start_date"=>"2015-03-31", "end_date"=>"2015-04-01", "distance"=>300}
+        ]
+      }
+    end
+    it 'throws an exception' do
+      expect{Drivy.process(input)}.to raise_exception(ArgumentError).with_message(
+          "rental['car_id'] => 3 resulted in nil while looking up in Drivy.cars. Seems like that id not present in 'input['cars']'"
+      )
+    end
+  end
 end

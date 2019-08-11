@@ -5,6 +5,7 @@ class Drivy
     attr_accessor :cars, :rentals
 
     def process(input)
+      check(input)
       self.cars = input['cars'].inject({}) do |memo, car|
         memo[car['id']] = car
         memo
@@ -13,11 +14,26 @@ class Drivy
       calculate_each_rental
     end
 
+    def check(input)
+      unless input['cars'].is_a?(Array)
+        raise ArgumentError, "\"input['cars']\" was not an Array. input['cars'] => #{input['cars'].inspect}."
+      end
+    end
+
+    def check_car(car, rental)
+      if car.nil?
+        raise ArgumentError, "rental['car_id'] => #{rental['car_id'].inspect} resulted in nil while looking up in Drivy.cars. " +
+          "Seems like that id not present in 'input['cars']'"
+      end
+    end
+
     def calculate_each_rental
       {
         rentals: rentals.map do |rental|
           rental_days = rental_days(rental['start_date'], rental['end_date'])
-          price = calculate_price(rental, cars[rental['car_id']], rental_days)
+          car = cars[rental['car_id']]
+          check_car(car, rental)
+          price = calculate_price(rental, car, rental_days)
           commission = (price * 0.3).round
           insurance, assistance, drivy = divide_commission(commission, rental_days)
           owner_gains = (price - commission)
