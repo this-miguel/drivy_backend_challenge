@@ -146,24 +146,22 @@ RSpec.describe Drivy do
         }
       }
 
-      xit 'calculates expected output for time prices' do
-        # just continue to test only prices
+      it 'just continue to test only prices' do
         get_prices_only = lambda do |output|
           {
             rentals: output[:rentals].map do |rental|
               {
                 id: rental[:id],
-                price: rental[:price]
+                price: rental[:actions].first[:amount]
               }
             end
           }
         end
+
         result = Drivy.process(input)
         expect(
           get_prices_only.call(result)
-        ).to eq(
-          get_prices_only.call(output)
-        )
+        ).to eq(output)
       end
     end
 
