@@ -36,29 +36,29 @@ RSpec.describe Drivy do
     let(:price) { 900 }
     let(:days) { 1 }
     it 'works for a commission of 9 euros' do
-      result = Drivy.divide_commission(price, days)
-      expect(result[:insurance_fee]).to eq 450
-      expect(result[:assistance_fee]).to eq 100
-      expect(result[:drivy_fee]).to eq 350
+      insurance, assistance, drivy = Drivy.divide_commission(price, days)
+      expect(insurance).to eq 450
+      expect(assistance).to eq 100
+      expect(drivy).to eq 350
     end
 
     describe '9 euros, two days' do
       let(:days) { 2 }
       it 'works for a commission of 9 euros' do
-        result = Drivy.divide_commission(price, days)
-        expect(result[:insurance_fee]).to eq 450
-        expect(result[:assistance_fee]).to eq 200
-        expect(result[:drivy_fee]).to eq 250
+        insurance, assistance, drivy = Drivy.divide_commission(price, days)
+        expect(insurance).to eq 450
+        expect(assistance).to eq 200
+        expect(drivy).to eq 250
       end
     end
 
     describe '9 euros, three days' do
       let(:days) { 3 }
       it 'works for a commission of 9 euros' do
-        result = Drivy.divide_commission(price, days)
-        expect(result[:insurance_fee]).to eq 450
-        expect(result[:assistance_fee]).to eq 300
-        expect(result[:drivy_fee]).to eq 150
+        insurance, assistance, drivy = Drivy.divide_commission(price, days)
+        expect(insurance).to eq 450
+        expect(assistance).to eq 300
+        expect(drivy).to eq 150
       end
     end
 
@@ -66,10 +66,10 @@ RSpec.describe Drivy do
              'Is this ok?' do
       let(:days) { 5 }
       it 'works for a commission of 9 euros' do
-        result = Drivy.divide_commission(price, days)
-        expect(result[:insurance_fee]).to eq 450
-        expect(result[:assistance_fee]).to eq 500
-        expect(result[:drivy_fee]).to eq -50
+        insurance, assistance, drivy = Drivy.divide_commission(price, days)
+        expect(insurance).to eq 450
+        expect(assistance).to eq 500
+        expect(drivy).to eq -50
       end
     end
   end

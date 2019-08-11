@@ -19,39 +19,28 @@ class Drivy
           rental_days = rental_days(rental['start_date'], rental['end_date'])
           price = calculate_price(rental, cars[rental['car_id']], rental_days)
           commission = (price * 0.3).round
-          commission_divided = divide_commission(commission, rental_days)
+          insurance, assistance, drivy = divide_commission(commission, rental_days)
+          owner_gains = (price - commission)
 
           {
             id: rental['id'],
             actions: [
-              {
-                who: "driver",
-                type: "debit",
-                amount: price
-              },
-              {
-                who: "owner",
-                type: "credit",
-                amount: (price - commission)
-              },
-              {
-                who: "insurance",
-                type: "credit",
-                amount: commission_divided[:insurance_fee]
-              },
-              {
-                who: "assistance",
-                type: "credit",
-                amount: commission_divided[:assistance_fee]
-              },
-              {
-                who: "drivy",
-                type: "credit",
-                amount: commission_divided[:drivy_fee]
-              }
+              action('driver','debit', price),
+              action('owner','credit', owner_gains),
+              action('insurance','credit', insurance),
+              action('assistance','credit', assistance),
+              action('drivy','credit', drivy),
             ]
           }
         end
+      }
+    end
+
+    def action(actor, type, amount)
+      {
+        who: actor,
+        type: type,
+        amount: amount
       }
     end
 
@@ -85,11 +74,7 @@ class Drivy
       insurance = commission / 2
       assistance = 100 * rental_days
       drivy = commission - (insurance + assistance)
-      {
-        insurance_fee: insurance,
-        assistance_fee: assistance,
-        drivy_fee: drivy
-      }
+      [insurance, assistance, drivy]
     end
 
   end
