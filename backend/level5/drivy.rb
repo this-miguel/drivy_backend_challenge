@@ -93,5 +93,11 @@ class Drivy
       [insurance, assistance, drivy]
     end
 
+    def options_for_rental_id(rental_id, options)
+      options.select do |option|
+        option['rental_id'] == rental_id
+      end.map { |option| option['type'] }
+    end
+
   end
 end

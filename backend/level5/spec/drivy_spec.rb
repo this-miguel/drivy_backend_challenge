@@ -32,6 +32,40 @@ RSpec.describe Drivy do
     end
   end
 
+  describe 'gets option values for a given rental id' do
+    let(:options) do
+      [
+        { "id" => 1, "rental_id" => 1, "type" => "gps" },
+        { "id" => 2, "rental_id" => 1, "type" => "baby_seat" },
+        { "id" => 3, "rental_id" => 2, "type" => "additional_insurance" }
+      ]
+    end
+    describe 'options for rental id 1' do
+      let(:rental_id) { 1 }
+      let(:expected) { ['gps', 'baby_seat']}
+      it 'gets the expected options' do
+        expect(Drivy.options_for_rental_id(rental_id, options)).to eq expected
+      end
+    end
+
+    describe 'options for rental id 2' do
+      let(:rental_id) { 2 }
+      let(:expected) { ['additional_insurance']}
+      it 'gets the expected options' do
+        expect(Drivy.options_for_rental_id(rental_id, options)).to eq expected
+      end
+    end
+
+    describe 'options for rental id 3' do
+      let(:rental_id) { 3 }
+      let(:expected) { [] }
+      it 'gets the expected options' do
+        expect(Drivy.options_for_rental_id(rental_id, options)).to eq expected
+      end
+    end
+
+  end
+
   describe 'commission calculation' do
     let(:price) { 900 }
     let(:days) { 1 }
