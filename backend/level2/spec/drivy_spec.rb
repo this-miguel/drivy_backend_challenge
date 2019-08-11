@@ -53,5 +53,72 @@ end
       end
     end
 
+    describe 'time price calculations including discount' do
+
+      let(:input) {
+        {
+            "cars" =>  [
+                { "id"=> 1, "price_per_day"=> 10, "price_per_km"=> 10 }
+            ],
+            "rentals" => [
+                # 1 day
+                { "id"=> 1, "car_id"=> 1, "start_date"=> "2019-01-01", "end_date"=> "2019-01-01", "distance"=> 1 },
+                # 2 days
+                { "id"=> 2, "car_id"=> 1, "start_date"=> "2019-01-01", "end_date"=> "2019-01-02", "distance"=> 1 },
+                # 4 days
+                { "id"=> 3, "car_id"=> 1, "start_date"=> "2019-01-01", "end_date"=> "2019-01-04", "distance"=> 1 },
+                # 5 days
+                { "id"=> 4, "car_id"=> 1, "start_date"=> "2019-01-01", "end_date"=> "2019-01-05", "distance"=> 1 },
+                # 10 days
+                { "id"=> 5, "car_id"=> 1, "start_date"=> "2019-01-01", "end_date"=> "2019-01-10", "distance"=> 1 },
+                # 11 days
+                { "id"=> 6, "car_id"=> 1, "start_date"=> "2019-01-01", "end_date"=> "2019-01-11", "distance"=> 1 },
+                # 21 days
+                { "id"=> 7, "car_id"=> 1, "start_date"=> "2019-01-01", "end_date"=> "2019-01-21", "distance"=> 1 },
+            ]
+        }
+      }
+
+      let(:output) {
+        {
+          rentals: [
+            {
+              id: 1,
+              price: 20
+            },
+            {
+              id: 2,
+              price: 29
+            },
+            {
+              id: 3,
+              price: 47
+            },
+            {
+              id: 4,
+              price: 54
+            },
+            {
+              id: 5,
+              price: 89
+            },
+            {
+              id: 6,
+              price: 94
+            },
+            {
+              id: 7,
+              price: 144
+            },
+          ]
+        }
+
+      }
+
+      it 'calculates expected output' do
+        result = Drivy.process(input)
+        expect(result).to eq(output)
+      end
+    end
   end
 end
