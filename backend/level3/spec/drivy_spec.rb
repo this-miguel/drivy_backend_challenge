@@ -17,8 +17,49 @@ RSpec.describe Drivy do
         expect(Drivy.rental_days(start_date, end_date)).to eq (1)
       end
     end
+  end
 
-end
+  describe 'commission calculation' do
+    let(:price) {900}
+    let(:days) {1}
+    it 'works for a commission of 9 euros' do
+      result = Drivy.divide_commission(price, days)
+      expect(result[:insurance_fee]).to eq 450
+      expect(result[:assistance_fee]).to eq 100
+      expect(result[:drivy_fee]).to eq 350
+    end
+
+    describe '9 euros, two days' do
+      let(:days) {2}
+      it 'works for a commission of 9 euros' do
+        result = Drivy.divide_commission(price, days)
+        expect(result[:insurance_fee]).to eq 450
+        expect(result[:assistance_fee]).to eq 200
+        expect(result[:drivy_fee]).to eq 250
+      end
+    end
+
+    describe '9 euros, three days' do
+      let(:days) {3}
+      it 'works for a commission of 9 euros' do
+        result = Drivy.divide_commission(price, days)
+        expect(result[:insurance_fee]).to eq 450
+        expect(result[:assistance_fee]).to eq 300
+        expect(result[:drivy_fee]).to eq 150
+      end
+    end
+
+    describe '9 euros, five days, in this case drivy loses money according to the rules given . ' +
+             'Is this ok?' do
+      let(:days) {5}
+      it 'works for a commission of 9 euros' do
+        result = Drivy.divide_commission(price, days)
+        expect(result[:insurance_fee]).to eq 450
+        expect(result[:assistance_fee]).to eq 500
+        expect(result[:drivy_fee]).to eq -50
+      end
+    end
+  end
 
   describe 'price calculation' do
     describe 'given example' do
@@ -62,7 +103,7 @@ end
         }
       }
 
-      xit 'calculates expected output' do
+      it 'calculates expected output' do
         result = Drivy.process(input)
         expect(result).to eq(output)
       end

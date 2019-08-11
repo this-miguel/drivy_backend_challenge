@@ -18,17 +18,19 @@ class Drivy
         rentals: rentals.map do |rental|
           rental_days = rental_days(rental['start_date'], rental['end_date'])
           price = calculate_price(rental, cars[rental['car_id']], rental_days)
+          commission = (price * 0.3).round
+          commission_divided = divide_commission(commission, rental_days)
 
           {
             id: rental['id'],
-            price: price
+            price: price,
+            commission: commission_divided
           }
         end
       }
     end
 
     def calculate_price(rental, car, rental_days)
-
       price_per_day = car['price_per_day']
       time_price = time_price(rental_days, price_per_day)
       distance_price = distance_price(rental['distance'], car['price_per_km'])
@@ -56,6 +58,17 @@ class Drivy
 
     def distance_price(kilometers, price_per_kilometres)
       kilometers * price_per_kilometres
+    end
+
+    def divide_commission(commission, rental_days)
+      insurance = commission / 2
+      assistance = 100 * rental_days
+      drivy = commission - (insurance + assistance)
+      {
+        insurance_fee: insurance,
+        assistance_fee: assistance,
+        drivy_fee: drivy
+      }
     end
 
   end
