@@ -184,7 +184,9 @@ RSpec.describe Drivy do
           }
         end
         result = Drivy.process(input)
-        expect(result).to eq(
+        expect(
+          get_prices_only.call(result)
+        ).to eq(
           get_prices_only.call(output)
         )
       end
