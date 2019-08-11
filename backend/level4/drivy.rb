@@ -23,8 +23,33 @@ class Drivy
 
           {
             id: rental['id'],
-            price: price,
-            commission: commission_divided
+            actions: [
+              {
+                who: "driver",
+                type: "debit",
+                amount: price
+              },
+              {
+                who: "owner",
+                type: "credit",
+                amount: (price - commission)
+              },
+              {
+                who: "insurance",
+                type: "credit",
+                amount: commission_divided[:insurance_fee]
+              },
+              {
+                who: "assistance",
+                type: "credit",
+                amount: commission_divided[:assistance_fee]
+              },
+              {
+                who: "drivy",
+                type: "credit",
+                amount: commission_divided[:drivy_fee]
+              }
+            ]
           }
         end
       }
