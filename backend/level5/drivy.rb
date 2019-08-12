@@ -2,7 +2,7 @@ require 'date'
 
 class Drivy
   class << self
-    attr_accessor :cars, :rentals
+    attr_accessor :cars, :rentals, :options
 
     def process(input)
       check(input)
@@ -11,6 +11,7 @@ class Drivy
         memo
       end
       self.rentals = input['rentals']
+      self.options = input['options']
       calculate_each_rental
     end
 
@@ -97,6 +98,26 @@ class Drivy
       options.select do |option|
         option['rental_id'] == rental_id
       end.map { |option| option['type'] }
+    end
+
+    def options_price(options, days)
+      baby_seat = 0
+      gps = 0
+      additional_insurance = 0
+      total = options.inject(0) do |sum, option|
+        case option
+        when 'baby_seat' # 2€/day
+          baby_seat = 200 * days
+          sum += baby_seat
+        when 'gps' # 5€/day
+          gps = 500 * days
+          sum += gps
+        when 'additional_insurance' # 10€/day
+          additional_insurance = 1_000 * days
+          sum += additional_insurance
+        end
+      end
+      [total, baby_seat, gps, additional_insurance]
     end
 
   end
