@@ -33,18 +33,15 @@ class Drivy
     def calculate_each_rental
       {
         rentals: rentals.map do |rental|
-
-          rental_days = rental_days(rental['start_date'], rental['end_date'])
+          rental_options = options_for_rental_id(rental['id'], options)
           car = cars[rental['car_id']]
           check_car(car, rental)
-          rental_options = options_for_rental_id(rental['id'], options)
-          options_total, baby_seat, gps, additional_insurance =  options_price(rental_options, rental_days)
-          price = calculate_price(rental, car, rental_days)
-          commission = (price * 0.3).round
-          insurance, assistance, drivy = divide_commission(commission, rental_days)
-          owner_gains = (price - commission) + baby_seat + gps
-          drivy_gains = drivy + additional_insurance
-          driver_pays = price + options_total
+
+          driver_pays,
+          owner_gains,
+          insurance,
+          assistance,
+          drivy_gains = actors_amounts(rental, car, rental_options)
 
           {
             id: rental['id'],
@@ -67,6 +64,25 @@ class Drivy
         type: type,
         amount: amount
       }
+    end
+
+    def actors_amounts(rental, car, rental_options)
+      rental_days = rental_days(rental['start_date'], rental['end_date'])
+
+      options_total, baby_seat, gps, additional_insurance =  options_price(rental_options, rental_days)
+      price = calculate_price(rental, car, rental_days)
+      commission = (price * 0.3).round
+      insurance, assistance, drivy = divide_commission(commission, rental_days)
+      owner_gains = (price - commission) + baby_seat + gps
+      drivy_gains = drivy + additional_insurance
+      driver_pays = price + options_total
+      [
+        driver_pays,
+        owner_gains,
+        insurance,
+        assistance,
+        drivy_gains
+      ]
     end
 
     def calculate_price(rental, car, rental_days)
