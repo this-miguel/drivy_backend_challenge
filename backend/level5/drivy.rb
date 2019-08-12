@@ -34,7 +34,9 @@ class Drivy
           rental_days = rental_days(rental['start_date'], rental['end_date'])
           car = cars[rental['car_id']]
           check_car(car, rental)
-          price = calculate_price(rental, car, rental_days)
+          rental_options = options_for_rental_id(rental['id'], options)
+          options_total, baby_seat, gps, additional_insurance =  options_price(rental_options, rental_days)
+          price = calculate_price(rental, car, rental_days, options_total)
           commission = (price * 0.3).round
           insurance, assistance, drivy = divide_commission(commission, rental_days)
           owner_gains = (price - commission)
@@ -61,11 +63,11 @@ class Drivy
       }
     end
 
-    def calculate_price(rental, car, rental_days)
+    def calculate_price(rental, car, rental_days, options_price)
       price_per_day = car['price_per_day']
       time_price = time_price(rental_days, price_per_day)
       distance_price = rental['distance'] * car['price_per_km']
-      time_price + distance_price
+      time_price + distance_price + options_price
     end
 
     def rental_days(start_date, end_date)
@@ -116,6 +118,7 @@ class Drivy
           additional_insurance = 1_000 * days
           sum += additional_insurance
         end
+        sum
       end
       [total, baby_seat, gps, additional_insurance]
     end

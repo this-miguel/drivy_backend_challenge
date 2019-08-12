@@ -168,6 +168,30 @@ RSpec.describe Drivy do
         end
       end
     end
+
+    describe 'none' do
+      let(:options){ [] }
+      describe '1 day' do
+        let(:days) { 1 }
+        it 'calculates the total price' do
+          total, baby_seat, gps, additional_insurance = Drivy.options_price(options, days)
+          expect(total).to eq 0
+          expect(gps).to eq 0
+          expect(baby_seat).to eq 0
+          expect(additional_insurance).to eq 0
+        end
+      end
+      describe '10 days' do
+        let(:days) { 10 }
+        it 'calculates the total price' do
+          total, baby_seat, gps, additional_insurance = Drivy.options_price(options, days)
+          expect(total).to eq 0
+          expect(gps).to eq 0
+          expect(baby_seat).to eq 0
+          expect(additional_insurance).to eq 0
+        end
+      end
+    end
   end
 
   describe 'commission calculation' do
@@ -245,7 +269,8 @@ RSpec.describe Drivy do
                 { "id"=> 6, "car_id"=> 1, "start_date"=> "2019-01-01", "end_date"=> "2019-01-11", "distance"=> 1 },
                 # 21 days
                 { "id"=> 7, "car_id"=> 1, "start_date"=> "2019-01-01", "end_date"=> "2019-01-21", "distance"=> 1 },
-            ]
+            ],
+            'options' => []
         }
       }
 
@@ -312,7 +337,8 @@ RSpec.describe Drivy do
           'rentals' => [
             # 1 day
             { 'id' => 1, 'car_id' => 1, 'start_date' => '2019-01-01', 'end_date' => '2019-01-01', 'distance' => 1 }
-          ]
+          ],
+          'options' => []
         }
       end
       let(:output) do
