@@ -16,8 +16,10 @@ class Drivy
     end
 
     def check(input)
-      unless input['cars'].is_a?(Array)
-        raise ArgumentError, "\"input['cars']\" was not an Array. input['cars'] => #{input['cars'].inspect}."
+      ['cars', 'options', 'rentals'].each do |key|
+        unless input[key].is_a?(Array)
+          raise ArgumentError, "\"input['#{key}']\" was not an Array. input['#{key}'] => #{input[key].inspect}."
+        end
       end
     end
 
