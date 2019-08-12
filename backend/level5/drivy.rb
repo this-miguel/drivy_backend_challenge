@@ -91,7 +91,15 @@ class Drivy
     end
 
     def rental_days(start_date, end_date)
-      (Date.parse(start_date)..Date.parse(end_date)).count
+      beginning = Date.parse(start_date)
+      ending = Date.parse(end_date)
+
+      unless ending >= beginning
+        raise ArgumentError, "beginning date must be greater or equal to ending date. " +
+        "begining date was parsed from: '#{start_date}', ending date was parsed from '#{end_date}'"
+      end
+
+      (beginning..ending).count
     end
 
     def time_price(days, price_per_day)

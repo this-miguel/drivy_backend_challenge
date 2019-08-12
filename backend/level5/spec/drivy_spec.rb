@@ -387,6 +387,19 @@ RSpec.describe Drivy do
   end
 
   describe 'exceptions' do
+
+    describe 'end_date is bigger than start_date' do
+      let(:start_date) { "2017-12-8" }
+      let(:end_date) { "2017-12-7" }
+
+      it 'can counts days including the last day' do
+        expect{Drivy.rental_days(start_date, end_date)}.to raise_exception(ArgumentError).with_message(
+            "beginning date must be greater or equal to ending date. " +
+            "begining date was parsed from: '#{start_date}', ending date was parsed from '#{end_date}'"
+        )
+      end
+    end
+
     describe 'cars is nil' do
       let (:input) do
         {
