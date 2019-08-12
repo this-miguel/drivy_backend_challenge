@@ -489,14 +489,15 @@ RSpec.describe Drivy do
     end
     let(:rental_options) { [] }
 
+    before :each do
+      @amounts = Drivy.actors_amounts(rental, car, rental_options)
+    end
+
     describe 'match whats the driver pays against what the other actors gain' do
       it 'amounts match' do
-        driver_pays,
-        owner_gains,
-        insurance,
-        assistance,
-        drivy_gains = Drivy.actors_amounts(rental, car, rental_options)
-        expect(driver_pays).to eq(owner_gains + insurance + assistance + drivy_gains)
+        expect(@amounts[:driver_pays]).to eq(
+          @amounts[:owner_gains] + @amounts[:insurance] + @amounts[:assistance] + @amounts[:drivy_gains]
+        )
       end
 
       describe 'for a rental of three months' do
@@ -505,24 +506,18 @@ RSpec.describe Drivy do
         end
 
         it 'amounts match' do
-          driver_pays,
-          owner_gains,
-          insurance,
-          assistance,
-          drivy_gains = Drivy.actors_amounts(rental, car, rental_options)
-          expect(driver_pays).to eq(owner_gains + insurance + assistance + drivy_gains)
+          expect(@amounts[:driver_pays]).to eq(
+            @amounts[:owner_gains] + @amounts[:insurance] + @amounts[:assistance] + @amounts[:drivy_gains]
+          )
         end
 
         describe 'for a rental of three months with options' do
           let(:options) { ['gps', 'baby_seat', 'additional_insurance']}
 
           it 'amounts match' do
-            driver_pays,
-            owner_gains,
-            insurance,
-            assistance,
-            drivy_gains = Drivy.actors_amounts(rental, car, rental_options)
-            expect(driver_pays).to eq(owner_gains + insurance + assistance + drivy_gains)
+            expect(@amounts[:driver_pays]).to eq(
+              @amounts[:owner_gains] + @amounts[:insurance] + @amounts[:assistance] + @amounts[:drivy_gains]
+            )
           end
         end
       end
@@ -530,54 +525,35 @@ RSpec.describe Drivy do
 
     describe 'drivy gets the money from the commission rest' do
       it 'amounts match' do
-        driver_pays,
-        owner_gains,
-        insurance,
-        assistance,
-        drivy_gains = Drivy.actors_amounts(rental, car, rental_options)
-        commision = (driver_pays * 0.3).round
+        commision = (@amounts[:driver_pays] * 0.3).round
         # 100 => assistance 1 euro daily
         # commision / 2 => insurance gets haf of the commision
         drivy_commission = (commision - 100) - (commision / 2)
-        expect(drivy_gains).to eq(drivy_commission)
+        expect(@amounts[:drivy_gains]).to eq(drivy_commission)
+        expect(@amounts[:drivy_commision]).to eq(drivy_commission)
       end
     end
 
     describe 'insurance gets a half  of commission ' do
       it 'amounts match' do
-        driver_pays,
-        owner_gains,
-        insurance,
-        assistance,
-        drivy_gains = Drivy.actors_amounts(rental, car, rental_options)
-        commision = (driver_pays * 0.3).round
+        commision = (@amounts[:driver_pays] * 0.3).round
         # commision / 2 => insurance gets haf of the commision
         insurance_commission = (commision / 2)
-        expect(insurance).to eq(insurance_commission)
+        expect(@amounts[:insurance]).to eq(insurance_commission)
       end
     end
 
     describe 'the owner gets 70% of what the driver pays ' do
       it 'amounts match' do
-        driver_pays,
-        owner_gains,
-        insurance,
-        assistance,
-        drivy_gains = Drivy.actors_amounts(rental, car, rental_options)
-        owner_commision = (driver_pays * 0.7).round
-        expect(owner_gains).to eq(owner_commision)
+        owner_commision = (@amounts[:driver_pays] * 0.7).round
+        expect(@amounts[:owner_gains]).to eq(owner_commision)
       end
     end
 
     describe 'roadside assistance gets 1 euro by day ' do
       it 'amounts match' do
-        driver_pays,
-        owner_gains,
-        insurance,
-        assistance,
-        drivy_gains = Drivy.actors_amounts(rental, car, rental_options)
         roadside_assistance = 100
-        expect(assistance).to eq(roadside_assistance)
+        expect(@amounts[:assistance]).to eq(roadside_assistance)
       end
 
       describe 'a ten days rental' do
@@ -585,13 +561,8 @@ RSpec.describe Drivy do
           { "id" =>  1, "car_id" => 1, "start_date" => "2019-01-01", "end_date" => "2019-01-10", "distance" => 900 }
         end
         it 'amounts match' do
-          driver_pays,
-          owner_gains,
-          insurance,
-          assistance,
-          drivy_gains = Drivy.actors_amounts(rental, car, rental_options)
           roadside_assistance = 100 * 10
-          expect(assistance).to eq(roadside_assistance)
+          expect(@amounts[:assistance]).to eq(roadside_assistance)
         end
       end
     end

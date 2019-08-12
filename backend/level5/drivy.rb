@@ -37,21 +37,17 @@ class Drivy
           car = cars[rental['car_id']]
           check_car(car, rental)
 
-          driver_pays,
-          owner_gains,
-          insurance,
-          assistance,
-          drivy_gains = actors_amounts(rental, car, rental_options)
+          amounts = actors_amounts(rental, car, rental_options)
 
           {
             id: rental['id'],
             options: rental_options,
             actions: [
-              action('driver','debit', driver_pays),
-              action('owner','credit', owner_gains),
-              action('insurance','credit', insurance),
-              action('assistance','credit', assistance),
-              action('drivy','credit', drivy_gains),
+              action('driver','debit', amounts[:driver_pays]),
+              action('owner','credit', amounts[:owner_gains]),
+              action('insurance','credit', amounts[:insurance]),
+              action('assistance','credit', amounts[:assistance]),
+              action('drivy','credit', amounts[:drivy_gains]),
             ]
           }
         end
@@ -72,17 +68,18 @@ class Drivy
       options_total, baby_seat, gps, additional_insurance =  options_price(rental_options, rental_days)
       price = calculate_price(rental, car, rental_days)
       commission = (price * 0.3).round
-      insurance, assistance, drivy = divide_commission(commission, rental_days)
+      insurance, assistance, drivy_commision = divide_commission(commission, rental_days)
       owner_gains = (price - commission) + baby_seat + gps
-      drivy_gains = drivy + additional_insurance
+      drivy_gains = drivy_commision + additional_insurance
       driver_pays = price + options_total
-      [
-        driver_pays,
-        owner_gains,
-        insurance,
-        assistance,
-        drivy_gains
-      ]
+      {
+        driver_pays: driver_pays,
+        owner_gains: owner_gains,
+        insurance: insurance,
+        assistance: assistance,
+        drivy_gains: drivy_gains,
+        drivy_commision: drivy_commision
+      }
     end
 
     def calculate_price(rental, car, rental_days)
