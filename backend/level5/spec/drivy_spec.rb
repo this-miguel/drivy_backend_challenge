@@ -241,7 +241,7 @@ RSpec.describe Drivy do
       let(:input) { read.call('../data/input.json') }
       let(:expected_output) { read.call('../data/expected_output.json') }
 
-      xit 'calculates expected output' do
+      it 'calculates expected output' do
         result = Drivy.process(input).stringify_keys
         expect(result).to eq(expected_output)
       end

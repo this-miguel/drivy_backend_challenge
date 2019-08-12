@@ -33,24 +33,28 @@ class Drivy
     def calculate_each_rental
       {
         rentals: rentals.map do |rental|
+
           rental_days = rental_days(rental['start_date'], rental['end_date'])
           car = cars[rental['car_id']]
           check_car(car, rental)
           rental_options = options_for_rental_id(rental['id'], options)
           options_total, baby_seat, gps, additional_insurance =  options_price(rental_options, rental_days)
-          price = calculate_price(rental, car, rental_days, options_total)
+          price = calculate_price(rental, car, rental_days)
           commission = (price * 0.3).round
           insurance, assistance, drivy = divide_commission(commission, rental_days)
-          owner_gains = (price - commission)
+          owner_gains = (price - commission) + baby_seat + gps
+          drivy_gains = drivy + additional_insurance
+          driver_pays = price + options_total
 
           {
             id: rental['id'],
+            options: rental_options,
             actions: [
-              action('driver','debit', price),
+              action('driver','debit', driver_pays),
               action('owner','credit', owner_gains),
               action('insurance','credit', insurance),
               action('assistance','credit', assistance),
-              action('drivy','credit', drivy),
+              action('drivy','credit', drivy_gains),
             ]
           }
         end
@@ -65,11 +69,11 @@ class Drivy
       }
     end
 
-    def calculate_price(rental, car, rental_days, options_price)
+    def calculate_price(rental, car, rental_days)
       price_per_day = car['price_per_day']
       time_price = time_price(rental_days, price_per_day)
       distance_price = rental['distance'] * car['price_per_km']
-      time_price + distance_price + options_price
+      time_price + distance_price
     end
 
     def rental_days(start_date, end_date)
