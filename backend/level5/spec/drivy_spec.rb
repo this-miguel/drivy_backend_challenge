@@ -346,6 +346,7 @@ RSpec.describe Drivy do
           rentals: [
             {
               id: 1,
+              options: [],
               actions: [
                 {
                   who: 'driver',
