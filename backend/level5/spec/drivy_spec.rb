@@ -479,4 +479,56 @@ RSpec.describe Drivy do
       end
     end
   end
+
+  describe 'amounts for actors' do
+    let(:car) do
+      { 'id' => 1, 'price_per_day' => 3000, 'price_per_km' => 1000 }
+    end
+    let(:rental) do
+      { "id" =>  1, "car_id" => 1, "start_date" => "2019-01-01", "end_date" => "2019-01-1", "distance" => 100 }
+    end
+    let(:rental_options) { [] }
+
+    describe 'match whats the driver pays against what the other actors gain' do
+      it 'amounts match' do
+        driver_pays,
+        owner_gains,
+        insurance,
+        assistance,
+        drivy_gains = Drivy.actors_amounts(rental, car, rental_options)
+        expect(driver_pays).to eq(owner_gains + insurance + assistance + drivy_gains)
+      end
+
+      describe 'for a rental of three months' do
+        let(:rental) do
+          { "id" =>  1, "car_id" => 1, "start_date" => "2019-01-01", "end_date" => "2019-04-1", "distance" => 900 }
+        end
+
+        it 'amounts match' do
+          driver_pays,
+          owner_gains,
+          insurance,
+          assistance,
+          drivy_gains = Drivy.actors_amounts(rental, car, rental_options)
+          expect(driver_pays).to eq(owner_gains + insurance + assistance + drivy_gains)
+        end
+      end
+
+      describe 'for a rental of three months with options' do
+        let(:rental) do
+          { "id" =>  1, "car_id" => 1, "start_date" => "2019-01-01", "end_date" => "2019-04-1", "distance" => 900 }
+        end
+        let(:options) { ['gps', 'baby_seat', 'additional_insurance']}
+
+        it 'amounts match' do
+          driver_pays,
+          owner_gains,
+          insurance,
+          assistance,
+          drivy_gains = Drivy.actors_amounts(rental, car, rental_options)
+          expect(driver_pays).to eq(owner_gains + insurance + assistance + drivy_gains)
+        end
+      end
+    end
+  end
 end
