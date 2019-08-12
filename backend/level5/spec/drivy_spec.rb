@@ -567,5 +567,59 @@ RSpec.describe Drivy do
       end
     end
 
+    describe 'drivy gets the money for the additional insurance' do
+      let(:insurance_price_per_day) {1000}
+      let(:rental_options) { ['additional_insurance'] }
+      it 'amounts match' do
+        expect(@amounts[:drivy_gains]).to eq(@amounts[:drivy_commision] + insurance_price_per_day)
+      end
+
+      describe 'ten days rental' do
+        let(:rental) do
+          { "id" =>  1, "car_id" => 1, "start_date" => "2019-01-01", "end_date" => "2019-01-10", "distance" => 900 }
+        end
+
+        it 'amounts match' do
+          expect(@amounts[:drivy_gains]).to eq(@amounts[:drivy_commision] + insurance_price_per_day * 10)
+        end
+      end
+    end
+
+    describe 'the owner gets the money for the baby seat option' do
+      let(:rental_options) { ['baby_seat'] }
+      let(:baby_seat_price_per_day) { 200 }
+      it 'amounts match' do
+        owner_gain_without_options = (@amounts[:price_without_options] * 0.7).round
+        expect(@amounts[:owner_gains]).to eq(owner_gain_without_options + baby_seat_price_per_day)
+      end
+      describe 'ten days rental' do
+        let(:rental) do
+          { "id" =>  1, "car_id" => 1, "start_date" => "2019-01-01", "end_date" => "2019-01-10", "distance" => 900 }
+        end
+        it 'amounts match' do
+          owner_gain_without_options = (@amounts[:price_without_options] * 0.7).round
+          expect(@amounts[:owner_gains]).to eq(owner_gain_without_options + baby_seat_price_per_day * 10)
+        end
+      end
+    end
+
+    describe 'the owner gets the money for the gps' do
+      let(:rental_options) { ['gps'] }
+      let(:gps_price_per_day) { 500 }
+      it 'amounts match' do
+        owner_gain_without_options = (@amounts[:price_without_options] * 0.7).round
+        expect(@amounts[:owner_gains]).to eq(owner_gain_without_options + gps_price_per_day)
+      end
+      describe 'ten days rental' do
+        let(:rental) do
+          { "id" =>  1, "car_id" => 1, "start_date" => "2019-01-01", "end_date" => "2019-01-10", "distance" => 900 }
+        end
+        it 'amounts match' do
+          owner_gain_without_options = (@amounts[:price_without_options] * 0.7).round
+          expect(@amounts[:owner_gains]).to eq(owner_gain_without_options + gps_price_per_day * 10)
+        end
+      end
+    end
+
   end
 end
